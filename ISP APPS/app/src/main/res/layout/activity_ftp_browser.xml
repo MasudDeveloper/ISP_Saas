@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/main"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="#141414"> <!-- Netflix Dark Background -->
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        app:elevation="0dp"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize">
+            
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="BDIX Media Hub"
+                android:textColor="#E50914" 
+                android:textSize="22sp"
+                android:textStyle="bold" />
+                
+        </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/appBarLayout"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Hero Featured Movie -->
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="400dp">
+                
+                <ImageView
+                    android:id="@+id/imgFeatured"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:src="@android:drawable/screen_background_dark" />
+                    
+                <!-- Gradient overlay -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/bg_gradient_bottom" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:paddingBottom="20dp">
+                    
+                    <TextView
+                        android:id="@+id/tvFeaturedTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="DUNE: PART TWO"
+                        android:textColor="#FFFFFF"
+                        android:textSize="28sp"
+                        android:textStyle="bold"
+                        android:fontFamily="sans-serif-condensed"/>
+                        
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Sci-Fi • Local FTP Speed"
+                        android:textColor="#B3B3B3"
+                        android:textSize="14sp"
+                        android:layout_marginTop="8dp"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center"
+                        android:layout_marginTop="16dp">
+                        
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnPlayFeatured"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Play"
+                            android:textColor="#000000"
+                            app:backgroundTint="#FFFFFF"
+                            app:icon="@android:drawable/ic_media_play"
+                            app:iconTint="#000000"
+                            android:layout_marginEnd="8dp"/>
+                            
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnDownloadFeatured"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Download"
+                            android:textColor="#FFFFFF"
+                            app:backgroundTint="#333333"
+                            app:iconTint="#FFFFFF"/>
+                            
+                    </LinearLayout>
+                </LinearLayout>
+            </FrameLayout>
+
+            <!-- Trending Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Trending on BDIX"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="8dp"/>
+                
+            <!-- Horizontal Scroll Mockup (In real app, this is a RecyclerView) -->
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp">
+                
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingBottom="20dp">
+                    
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="120dp"
+                        android:layout_height="170dp"
+                        android:layout_marginEnd="8dp"
+                        app:cardCornerRadius="8dp"
+                        app:cardBackgroundColor="#333333">
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            android:src="@android:drawable/ic_menu_gallery"/>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="120dp"
+                        android:layout_height="170dp"
+                        android:layout_marginEnd="8dp"
+                        app:cardCornerRadius="8dp"
+                        app:cardBackgroundColor="#333333">
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            android:src="@android:drawable/ic_menu_gallery"/>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="120dp"
+                        android:layout_height="170dp"
+                        android:layout_marginEnd="8dp"
+                        app:cardCornerRadius="8dp"
+                        app:cardBackgroundColor="#333333">
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            android:src="@android:drawable/ic_menu_gallery"/>
+                    </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
+            </HorizontalScrollView>
+        </LinearLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

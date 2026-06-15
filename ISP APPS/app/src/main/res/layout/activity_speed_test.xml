@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0F172A">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#1E293B"
+        app:title="Speed Test"
+        app:titleTextColor="#FFFFFF"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <!-- Speedometer Circular UI -->
+    <FrameLayout
+        android:id="@+id/speedometerContainer"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:layout_marginTop="50dp"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+        
+        <!-- Outer Glowing Ring -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/circle_glow_brand"/>
+            
+        <com.mikhaellopez.circularprogressbar.CircularProgressBar
+            android:id="@+id/speedProgressBar"
+            android:layout_width="220dp"
+            android:layout_height="220dp"
+            android:layout_gravity="center"
+            app:cpb_background_progressbar_color="#334155"
+            app:cpb_background_progressbar_width="10dp"
+            app:cpb_progressbar_color="#3B82F6"
+            app:cpb_progressbar_width="12dp"
+            app:cpb_progress_direction="to_right"
+            app:cpb_round_border="true" />
+            
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical"
+            android:gravity="center">
+            
+            <TextView
+                android:id="@+id/tvSpeedVal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0.0"
+                android:textColor="#FFFFFF"
+                android:textSize="48sp"
+                android:textStyle="bold"/>
+                
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Mbps"
+                android:textColor="#94A3B8"
+                android:textSize="16sp"/>
+        </LinearLayout>
+    </FrameLayout>
+
+    <!-- Stats Grid -->
+    <LinearLayout
+        android:id="@+id/statsContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="40dp"
+        android:weightSum="2"
+        app:layout_constraintTop_toBottomOf="@id/speedometerContainer">
+        
+        <!-- Ping -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="16dp"
+            android:background="@drawable/bg_glass_card"
+            android:layout_marginEnd="8dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="PING"
+                android:textColor="#64748B"
+                android:textSize="12sp"
+                android:textStyle="bold"/>
+            <TextView
+                android:id="@+id/tvPing"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="-- ms"
+                android:textColor="#FFFFFF"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_marginTop="4dp"/>
+        </LinearLayout>
+
+        <!-- Upload -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="16dp"
+            android:background="@drawable/bg_glass_card"
+            android:layout_marginStart="8dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="UPLOAD"
+                android:textColor="#64748B"
+                android:textSize="12sp"
+                android:textStyle="bold"/>
+            <TextView
+                android:id="@+id/tvUpload"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="-- Mbps"
+                android:textColor="#FFFFFF"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_marginTop="4dp"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnStartTest"
+        android:layout_width="200dp"
+        android:layout_height="60dp"
+        android:text="START TEST"
+        android:textSize="18sp"
+        app:cornerRadius="30dp"
+        app:backgroundTint="#3B82F6"
+        android:layout_marginBottom="40dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
