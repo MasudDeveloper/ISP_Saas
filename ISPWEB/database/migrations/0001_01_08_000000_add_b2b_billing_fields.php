@@ -15,7 +15,9 @@ return new class extends Migration
         });
 
         // Add 'corporate' to role enum using raw DB statement (to avoid Doctrine DBAL dependency for enum modification)
-        DB::statement("ALTER TABLE users MODIFY COLUMN role ENUM('super_admin', 'isp_staff', 'reseller', 'corporate', 'customer') DEFAULT 'customer'");
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement("ALTER TABLE users MODIFY COLUMN role ENUM('super_admin', 'isp_staff', 'reseller', 'corporate', 'customer') DEFAULT 'customer'");
+        }
 
         Schema::table('customer_profiles', function (Blueprint $table) {
             $table->timestamp('grace_period_used_at')->nullable()->after('status');
@@ -29,7 +31,9 @@ return new class extends Migration
             $table->dropColumn(['parent_id', 'credit_limit']);
         });
 
-        DB::statement("ALTER TABLE users MODIFY COLUMN role ENUM('super_admin', 'isp_staff', 'reseller', 'customer') DEFAULT 'customer'");
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement("ALTER TABLE users MODIFY COLUMN role ENUM('super_admin', 'isp_staff', 'reseller', 'customer') DEFAULT 'customer'");
+        }
 
         Schema::table('customer_profiles', function (Blueprint $table) {
             $table->dropColumn('grace_period_used_at');

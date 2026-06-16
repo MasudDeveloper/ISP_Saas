@@ -3,14 +3,47 @@
 @section('content')
 <div class="max-w-7xl mx-auto space-y-6">
     <!-- Header -->
-    <div class="flex justify-between items-end mb-8">
+    <div class="flex justify-between items-end mb-8" x-data="{ showModal: false }">
         <div>
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Customers</h1>
             <p class="text-sm text-gray-500 mt-1">Manage your ISP subscribers and their PPPoE connections.</p>
         </div>
-        <button class="px-4 py-2 text-sm font-medium bg-brand-500 text-white rounded-xl hover:bg-brand-600 transition-colors shadow-lg glow-primary">
+        <button @click="showModal = true" class="px-4 py-2 text-sm font-medium bg-brand-500 text-white rounded-xl hover:bg-brand-600 transition-colors shadow-lg glow-primary">
             <i data-lucide="plus" class="w-4 h-4 inline-block mr-2"></i> Add Customer
         </button>
+
+        <!-- Add Customer Modal -->
+        <div x-show="showModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50" x-cloak>
+            <div @click.away="showModal = false" class="bg-white dark:bg-dark-surface rounded-2xl w-full max-w-md p-6 shadow-2xl">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold dark:text-white">Add New Customer</h2>
+                    <button @click="showModal = false" class="text-gray-500 hover:text-gray-800 dark:hover:text-white">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+                <form action="/customers" method="POST">
+                    @csrf
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Name</label>
+                            <input type="text" name="name" required class="w-full px-3 py-2 border rounded-lg bg-gray-50 dark:bg-dark-bg border-gray-200 dark:border-dark-border focus:ring-brand-500 focus:border-brand-500 dark:text-white">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email Address</label>
+                            <input type="email" name="email" required class="w-full px-3 py-2 border rounded-lg bg-gray-50 dark:bg-dark-bg border-gray-200 dark:border-dark-border focus:ring-brand-500 focus:border-brand-500 dark:text-white">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password</label>
+                            <input type="password" name="password" required class="w-full px-3 py-2 border rounded-lg bg-gray-50 dark:bg-dark-bg border-gray-200 dark:border-dark-border focus:ring-brand-500 focus:border-brand-500 dark:text-white">
+                        </div>
+                    </div>
+                    <div class="mt-6 flex justify-end gap-3">
+                        <button type="button" @click="showModal = false" class="px-4 py-2 text-sm font-medium bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-xl transition-colors">Cancel</button>
+                        <button type="submit" class="px-4 py-2 text-sm font-medium bg-brand-500 text-white rounded-xl hover:bg-brand-600 transition-colors">Save Customer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 
     <!-- Table -->

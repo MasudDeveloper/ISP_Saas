@@ -5,20 +5,18 @@ namespace App\Services;
 use App\Models\MikrotikRouter;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Log;
+use RouterOS\Client;
+use RouterOS\Query;
 
 class MikrotikService
 {
-    protected $api;
+    protected $client;
     protected $router;
     protected $connected = false;
 
     public function __construct(MikrotikRouter $router)
     {
         $this->router = $router;
-        $this->api = new RouterosAPI();
-        // $this->api->debug = env('APP_DEBUG', false);
-        $this->api->port = $router->api_port;
-        
         $this->connect();
     }
 
@@ -34,10 +32,16 @@ class MikrotikService
             $password = $this->router->password;
         }
 
-        if ($this->api->connect($this->router->host, $this->router->username, $password)) {
+        try {
+            $this->client = new Client([
+                'host' => $this->router->host,
+                'user' => $this->router->username,
+                'pass' => $password,
+                'port' => (int) $this->router->api_port
+            ]);
             $this->connected = true;
-        } else {
-            Log::error("Mikrotik Connection Failed for Router: {$this->router->name}");
+        } catch (\Exception $e) {
+            Log::error("Mikrotik Connection Failed for Router: {$this->router->name} - " . $e->getMessage());
             throw new \Exception("Could not connect to Mikrotik Router: {$this->router->name}");
         }
     }
@@ -55,10 +59,17 @@ class MikrotikService
      */
     public function enablePppSecret($username)
     {
-        $secrets = $this->api->comm('/ppp/secret/print', ['?name' => $username]);
-        if (!empty($secrets) && !isset($secrets['error'])) {
+        if (!$this->connected) return false;
+
+        $query = (new Query('/ppp/secret/print'))->where('name', $username);
+        $secrets = $this->client->query($query)->read();
+
+        if (!empty($secrets)) {
             $id = $secrets[0]['.id'];
-            $this->api->comm('/ppp/secret/enable', ['.id' => $id]);
+            $updateQuery = (new Query('/ppp/secret/set'))
+                ->equal('.id', $id)
+                ->equal('disabled', 'no');
+            $this->client->query($updateQuery)->read();
             return true;
         }
         return false;
@@ -69,10 +80,17 @@ class MikrotikService
      */
     public function disablePppSecret($username)
     {
-        $secrets = $this->api->comm('/ppp/secret/print', ['?name' => $username]);
-        if (!empty($secrets) && !isset($secrets['error'])) {
+        if (!$this->connected) return false;
+
+        $query = (new Query('/ppp/secret/print'))->where('name', $username);
+        $secrets = $this->client->query($query)->read();
+
+        if (!empty($secrets)) {
             $id = $secrets[0]['.id'];
-            $this->api->comm('/ppp/secret/disable', ['.id' => $id]);
+            $updateQuery = (new Query('/ppp/secret/set'))
+                ->equal('.id', $id)
+                ->equal('disabled', 'yes');
+            $this->client->query($updateQuery)->read();
             return true;
         }
         return false;
@@ -83,10 +101,15 @@ class MikrotikService
      */
     public function disconnectActiveSession($username)
     {
-        $activeConnections = $this->api->comm('/ppp/active/print', ['?name' => $username]);
-        if (!empty($activeConnections) && !isset($activeConnections['error'])) {
+        if (!$this->connected) return false;
+
+        $query = (new Query('/ppp/active/print'))->where('name', $username);
+        $activeConnections = $this->client->query($query)->read();
+
+        if (!empty($activeConnections)) {
             foreach ($activeConnections as $conn) {
-                $this->api->comm('/ppp/active/remove', ['.id' => $conn['.id']]);
+                $removeQuery = (new Query('/ppp/active/remove'))->equal('.id', $conn['.id']);
+                $this->client->query($removeQuery)->read();
             }
             return true;
         }
@@ -98,13 +121,17 @@ class MikrotikService
      */
     public function changeProfile($username, $profileName)
     {
-        $secrets = $this->api->comm('/ppp/secret/print', ['?name' => $username]);
-        if (!empty($secrets) && !isset($secrets['error'])) {
+        if (!$this->connected) return false;
+
+        $query = (new Query('/ppp/secret/print'))->where('name', $username);
+        $secrets = $this->client->query($query)->read();
+
+        if (!empty($secrets)) {
             $id = $secrets[0]['.id'];
-            $this->api->comm('/ppp/secret/set', [
-                '.id' => $id,
-                'profile' => $profileName
-            ]);
+            $updateQuery = (new Query('/ppp/secret/set'))
+                ->equal('.id', $id)
+                ->equal('profile', $profileName);
+            $this->client->query($updateQuery)->read();
             return true;
         }
         return false;
@@ -115,23 +142,25 @@ class MikrotikService
      */
     public function setSimpleQueue($name, $targetIp, $maxLimit)
     {
-        // $maxLimit format: "10M/10M" (Upload/Download)
-        $existing = $this->api->comm('/queue/simple/print', ['?name' => $name]);
+        if (!$this->connected) return false;
+
+        $query = (new Query('/queue/simple/print'))->where('name', $name);
+        $existing = $this->client->query($query)->read();
         
-        if (!empty($existing) && !isset($existing['error'])) {
+        if (!empty($existing)) {
             // Update
-            $this->api->comm('/queue/simple/set', [
-                '.id' => $existing[0]['.id'],
-                'target' => $targetIp,
-                'max-limit' => $maxLimit
-            ]);
+            $updateQuery = (new Query('/queue/simple/set'))
+                ->equal('.id', $existing[0]['.id'])
+                ->equal('target', $targetIp)
+                ->equal('max-limit', $maxLimit);
+            $this->client->query($updateQuery)->read();
         } else {
             // Add new
-            $this->api->comm('/queue/simple/add', [
-                'name' => $name,
-                'target' => $targetIp,
-                'max-limit' => $maxLimit
-            ]);
+            $addQuery = (new Query('/queue/simple/add'))
+                ->equal('name', $name)
+                ->equal('target', $targetIp)
+                ->equal('max-limit', $maxLimit);
+            $this->client->query($addQuery)->read();
         }
         return true;
     }
@@ -141,17 +170,14 @@ class MikrotikService
      */
     public function getRouterResource()
     {
-        $resource = $this->api->comm('/system/resource/print');
-        if (!empty($resource) && !isset($resource['error'])) {
+        if (!$this->connected) return null;
+
+        $query = new Query('/system/resource/print');
+        $resource = $this->client->query($query)->read();
+
+        if (!empty($resource)) {
             return $resource[0];
         }
         return null;
-    }
-
-    public function __destruct()
-    {
-        if ($this->connected) {
-            $this->api->disconnect();
-        }
     }
 }

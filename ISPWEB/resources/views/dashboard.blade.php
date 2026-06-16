@@ -27,7 +27,7 @@
             <div class="flex justify-between items-start mb-4 relative z-10">
                 <div>
                     <p class="text-sm font-medium text-gray-500">Active Users</p>
-                    <h3 class="text-3xl font-bold text-gray-900 dark:text-white mt-1">2,420</h3>
+                    <h3 class="text-3xl font-bold text-gray-900 dark:text-white mt-1">{{ number_format($activeUsersCount) }}</h3>
                 </div>
                 <div class="p-3 bg-brand-50 dark:bg-brand-500/10 rounded-xl text-brand-500 glow-primary">
                     <i data-lucide="users" class="w-6 h-6"></i>
@@ -45,7 +45,7 @@
             <div class="flex justify-between items-start mb-4 relative z-10">
                 <div>
                     <p class="text-sm font-medium text-gray-500">Expired Users</p>
-                    <h3 class="text-3xl font-bold text-gray-900 dark:text-white mt-1">145</h3>
+                    <h3 class="text-3xl font-bold text-gray-900 dark:text-white mt-1">{{ number_format($expiredUsersCount) }}</h3>
                 </div>
                 <div class="p-3 bg-red-50 dark:bg-red-500/10 rounded-xl text-red-500 glow-danger">
                     <i data-lucide="user-minus" class="w-6 h-6"></i>
@@ -63,7 +63,7 @@
             <div class="flex justify-between items-start mb-4 relative z-10">
                 <div>
                     <p class="text-sm font-medium text-gray-500">Monthly Revenue</p>
-                    <h3 class="text-3xl font-bold text-gray-900 dark:text-white mt-1">$45.2k</h3>
+                    <h3 class="text-3xl font-bold text-gray-900 dark:text-white mt-1">${{ number_format($monthlyRevenue, 2) }}</h3>
                 </div>
                 <div class="p-3 bg-emerald-50 dark:bg-emerald-500/10 rounded-xl text-emerald-500 glow-success">
                     <i data-lucide="dollar-sign" class="w-6 h-6"></i>
@@ -81,7 +81,7 @@
             <div class="flex justify-between items-start mb-4 relative z-10">
                 <div>
                     <p class="text-sm font-medium text-gray-500">Open Tickets</p>
-                    <h3 class="text-3xl font-bold text-gray-900 dark:text-white mt-1">28</h3>
+                    <h3 class="text-3xl font-bold text-gray-900 dark:text-white mt-1">{{ number_format($openTicketsCount) }}</h3>
                 </div>
                 <div class="p-3 bg-amber-50 dark:bg-amber-500/10 rounded-xl text-amber-500 glow-warning">
                     <i data-lucide="ticket" class="w-6 h-6"></i>
@@ -291,7 +291,7 @@
         const options = {
             series: [{
                 name: 'Revenue',
-                data: [31000, 40000, 28000, 51000, 42000, 109000, 100000, 120000]
+                data: @json($chartData)
             }],
             chart: {
                 type: 'area',
@@ -317,7 +317,7 @@
                 width: 3
             },
             xaxis: {
-                categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
+                categories: @json($chartLabels),
                 axisBorder: { show: false },
                 axisTicks: { show: false },
                 labels: {

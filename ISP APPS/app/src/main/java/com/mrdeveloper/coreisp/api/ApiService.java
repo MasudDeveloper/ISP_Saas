@@ -26,4 +26,10 @@ public interface ApiService {
             @Header("Authorization") String token,
             @Body HashMap<String, String> request
     );
+
+    @GET("customer/usage")
+    Call<Object> getUsageHistory(@Header("Authorization") String token);
+
+    @GET("customer/billing-history")
+    Call<Object> getBillingHistory(@Header("Authorization") String token);
 }

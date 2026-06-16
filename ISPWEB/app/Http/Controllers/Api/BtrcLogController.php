@@ -33,21 +33,11 @@ class BtrcLogController extends Controller
         ]);
 
         try {
-            DB::table('btrc_logs')->insert([
-                'username' => $request->username,
-                'src_ip' => $request->src_ip,
-                'dst_ip' => $request->dst_ip,
-                'mac_address' => $request->mac_address,
-                'session_start' => $request->session_start ? date('Y-m-d H:i:s', strtotime($request->session_start)) : now(),
-                'session_end' => $request->session_end ? date('Y-m-d H:i:s', strtotime($request->session_end)) : now(),
-                'bytes_up' => $request->bytes_up ?? 0,
-                'bytes_down' => $request->bytes_down ?? 0
-            ]);
-
+            \App\Jobs\ProcessBtrcLog::dispatch($request->all());
             return response()->json(['success' => true]);
         } catch (\Exception $e) {
             Log::error("BTRC Log Error: " . $e->getMessage());
-            return response()->json(['error' => 'Failed to save log'], 500);
+            return response()->json(['error' => 'Failed to queue log'], 500);
         }
     }
 }

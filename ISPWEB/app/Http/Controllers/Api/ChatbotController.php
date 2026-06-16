@@ -10,6 +10,7 @@ use App\Models\Invoice;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Jobs\SendWhatsAppAlert;
+use Illuminate\Support\Facades\Http;
 
 class ChatbotController extends Controller
 {
@@ -95,7 +96,7 @@ class ChatbotController extends Controller
                 SendWhatsAppAlert::dispatch($phone, $reply);
             }
 
-            if ($text == '2' || str_contains($text, 'bill')) {
+            } elseif ($text == '2' || str_contains($text, 'bill')) {
                 $pendingInvoice = Invoice::where('customer_id', $user->id)->where('payment_status', 'unpaid')->first();
                 if ($pendingInvoice) {
                     $reply = "Your current due is {$pendingInvoice->amount} BDT. Due Date: " . \Carbon\Carbon::parse($pendingInvoice->due_date)->format('d M Y');
@@ -103,9 +104,55 @@ class ChatbotController extends Controller
                     $reply = "You have no pending bills. Your account is fully paid.";
                 }
                 SendWhatsAppAlert::dispatch($phone, $reply);
+            } else {
+                // Fallback to OpenAI NLP for intent detection
+                $intent = $this->analyzeIntent($text);
+                
+                if ($intent === 'support') {
+                    $reply = "I understand you are facing a technical issue. Please reply with '1' to create a support ticket.";
+                } elseif ($intent === 'billing') {
+                    $reply = "You are asking about your bill. Please reply with '2' to check your current due.";
+                } else {
+                    $reply = "I'm your virtual assistant. How can I help? Reply '1' for Support or '2' for Billing.";
+                }
+                SendWhatsAppAlert::dispatch($phone, $reply);
             }
         }
 
         return response()->json(['status' => 'ok']);
+    }
+
+    /**
+     * Use OpenAI API to analyze customer intent
+     */
+    private function analyzeIntent($text)
+    {
+        $openAiKey = env('OPENAI_API_KEY');
+        if (!$openAiKey) return 'general';
+
+        try {
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $openAiKey,
+                'Content-Type' => 'application/json',
+            ])->post('https://api.openai.com/v1/chat/completions', [
+                'model' => 'gpt-3.5-turbo',
+                'messages' => [
+                    ['role' => 'system', 'content' => 'Classify the user intent into one of these categories: "support", "billing", "general". Only return the category word.'],
+                    ['role' => 'user', 'content' => $text]
+                ],
+                'max_tokens' => 10,
+                'temperature' => 0.0
+            ]);
+
+            if ($response->successful()) {
+                $data = $response->json();
+                $intent = strtolower(trim($data['choices'][0]['message']['content'] ?? 'general'));
+                return in_array($intent, ['support', 'billing']) ? $intent : 'general';
+            }
+        } catch (\Exception $e) {
+            Log::error('OpenAI NLP Error: ' . $e->getMessage());
+        }
+
+        return 'general';
     }
 }

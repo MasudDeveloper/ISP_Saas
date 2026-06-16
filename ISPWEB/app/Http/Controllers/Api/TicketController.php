@@ -119,15 +119,16 @@ class TicketController extends Controller
             'Content-Type: application/json'
         ];
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-        
-        $response = curl_exec($ch);
+        try {
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+            
+            $response = curl_exec($ch);
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error("FCM Error: " . $e->getMessage());
         }
@@ -161,5 +162,18 @@ class TicketController extends Controller
         // so the customer app can listen to it without polling Laravel.
 
         return response()->json(['success' => true]);
+    }
+
+    /**
+     * Get all active technician locations for Admin Map
+     */
+    public function getTechnicianLocations(Request $request)
+    {
+        $technicians = DB::table('technicians')
+            ->select('id', 'name', 'current_lat', 'current_lng', 'last_ping', 'is_free')
+            ->whereNotNull('current_lat')
+            ->get();
+            
+        return response()->json(['technicians' => $technicians]);
     }
 }

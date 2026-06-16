@@ -110,7 +110,7 @@
                 
                 <div class="pt-6 mt-6 border-t border-gray-200 dark:border-dark-border">
                     <p class="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Settings</p>
-                    <a href="#" class="flex items-center gap-3 px-4 py-3 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-dark-border/50 rounded-xl transition-all font-medium">
+                    <a href="{{ url('/settings') }}" class="flex items-center gap-3 px-4 py-3 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-dark-border/50 rounded-xl transition-all font-medium">
                         <i data-lucide="settings" class="w-5 h-5"></i> Configuration
                     </a>
                 </div>
@@ -157,8 +157,8 @@
                         </button>
                         
                         <div x-show="open" @click.away="open = false" x-transition class="absolute right-0 mt-2 w-48 bg-white dark:bg-dark-surface rounded-xl shadow-lg border border-gray-200 dark:border-dark-border py-2 z-50" x-cloak>
-                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-dark-border">Profile</a>
-                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-dark-border">Settings</a>
+                            <a href="{{ url('/profile') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-dark-border">Profile</a>
+                            <a href="{{ url('/settings') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-dark-border">Settings</a>
                             <div class="border-t border-gray-200 dark:border-dark-border my-1"></div>
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf

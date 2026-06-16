@@ -17,4 +17,22 @@ class CustomerWebController extends Controller
 
         return view('customers.index', compact('customers'));
     }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:6'
+        ]);
+
+        \App\Models\User::factory()->create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+            'role' => 'customer'
+        ]);
+
+        return redirect('/customers')->with('success', 'Customer added successfully!');
+    }
 }
